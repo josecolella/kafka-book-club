@@ -138,11 +138,28 @@
       padding: 0.85rem;
       background: var(--bg-card);
       border: 1px solid var(--border);
+      border-top: 2px solid var(--accent);
       border-radius: 6px;
       margin-bottom: 2rem;
       text-decoration: none;
       transition: all 0.2s;
       color: inherit;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .sidebar-book::before {
+      content: '';
+      position: absolute;
+      top: -10px; left: 5px;
+      width: 40px; height: 40px;
+      background: radial-gradient(circle, rgba(212, 163, 98, 0.08) 0%, transparent 70%);
+      pointer-events: none;
+      transition: opacity 0.3s;
+    }
+
+    .sidebar-book:hover::before, .sidebar-book:focus-visible::before {
+      background: radial-gradient(circle, rgba(212, 163, 98, 0.18) 0%, transparent 70%);
     }
 
     .sidebar-book:hover, .sidebar-book:focus-visible {
@@ -150,7 +167,7 @@
       background: var(--bg-card-hover);
     }
 
-    .sidebar-book .book-icon { font-size: 1.5rem; line-height: 1; flex-shrink: 0; margin-top: 0.1rem; }
+    .sidebar-book .book-icon { font-size: 1.5rem; line-height: 1; flex-shrink: 0; margin-top: 0.1rem; position: relative; z-index: 1; }
 
     .sidebar-book .book-meta { flex: 1; min-width: 0; }
 
@@ -328,6 +345,37 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
+    @keyframes cardStagger {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes scoreEntrance {
+      from { transform: scale(0.85); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    @keyframes glowPulse {
+      0%, 100% { border-color: var(--accent); box-shadow: 0 0 8px rgba(212, 163, 98, 0.15); }
+      50% { border-color: var(--accent-glow); box-shadow: 0 0 20px rgba(212, 163, 98, 0.3); }
+    }
+
+    @keyframes confettiFall {
+      0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(120px) rotate(360deg); opacity: 0; }
+    }
+
+    @keyframes selectPulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.015); }
+      100% { transform: scale(1); }
+    }
+
+    @keyframes radioDotExpand {
+      from { transform: scale(0); }
+      to { transform: scale(1); }
+    }
+
     /* ─── Quiz List (Home) ─── */
     .quiz-grid { display: flex; flex-direction: column; gap: 1rem; }
 
@@ -343,7 +391,17 @@
       gap: 1.5rem;
       position: relative;
       overflow: hidden;
+      animation: cardStagger 0.4s ease both;
     }
+
+    .quiz-card:nth-child(1) { animation-delay: 0ms; }
+    .quiz-card:nth-child(2) { animation-delay: 60ms; }
+    .quiz-card:nth-child(3) { animation-delay: 120ms; }
+    .quiz-card:nth-child(4) { animation-delay: 180ms; }
+    .quiz-card:nth-child(5) { animation-delay: 240ms; }
+    .quiz-card:nth-child(6) { animation-delay: 300ms; }
+    .quiz-card:nth-child(7) { animation-delay: 360ms; }
+    .quiz-card:nth-child(8) { animation-delay: 420ms; }
 
     .quiz-card::before {
       content: '';
@@ -503,7 +561,19 @@
       padding: 1.5rem 1.75rem;
       margin-bottom: 0.75rem;
       transition: border-color 0.3s;
+      animation: cardStagger 0.4s ease both;
     }
+
+    .question-card:nth-child(1) { animation-delay: 0ms; }
+    .question-card:nth-child(2) { animation-delay: 60ms; }
+    .question-card:nth-child(3) { animation-delay: 120ms; }
+    .question-card:nth-child(4) { animation-delay: 180ms; }
+    .question-card:nth-child(5) { animation-delay: 240ms; }
+    .question-card:nth-child(6) { animation-delay: 300ms; }
+    .question-card:nth-child(7) { animation-delay: 360ms; }
+    .question-card:nth-child(8) { animation-delay: 420ms; }
+    .question-card:nth-child(9) { animation-delay: 480ms; }
+    .question-card:nth-child(10) { animation-delay: 540ms; }
 
     .question-card.correct { border-color: var(--green); }
     .question-card.incorrect { border-color: var(--red); }
@@ -530,6 +600,13 @@
       margin-bottom: 0.5rem;
     }
 
+    .question-number::before {
+      content: '\25CF';
+      margin-right: 0.4em;
+      font-size: 0.5em;
+      vertical-align: middle;
+    }
+
     .options { display: flex; flex-direction: column; gap: 0.4rem; }
 
     .option {
@@ -539,13 +616,21 @@
       padding: 0.7rem 1rem;
       border-radius: 5px;
       border: 1px solid var(--border);
+      border-left: 3px solid transparent;
       cursor: pointer;
       transition: all 0.15s;
       font-size: 0.92rem;
       color: var(--text);
     }
 
-    .option:hover { background: var(--bg-card-hover); border-color: var(--border-light); }
+    .option:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--border-light);
+      border-left-color: var(--accent);
+      transform: translateX(2px);
+    }
+
+    .option.selected { animation: selectPulse 100ms ease; }
 
     .option input[type="radio"] {
       appearance: none;
@@ -568,6 +653,7 @@
       inset: 2px;
       background: var(--accent);
       border-radius: 50%;
+      animation: radioDotExpand 0.15s ease;
     }
 
     .option.selected { border-color: var(--accent); background: var(--accent-dim); }
@@ -575,10 +661,12 @@
     .option.reveal-correct { border-color: var(--green); background: var(--green-bg); color: var(--green); }
     .option.reveal-correct input[type="radio"] { border-color: var(--green); }
     .option.reveal-correct input[type="radio"]:checked::after { background: var(--green); }
+    .option.reveal-correct span::before { content: '\2713  '; font-weight: 700; }
 
     .option.reveal-incorrect { border-color: var(--red); background: var(--red-bg); color: var(--red); }
     .option.reveal-incorrect input[type="radio"] { border-color: var(--red); }
     .option.reveal-incorrect input[type="radio"]:checked::after { background: var(--red); }
+    .option.reveal-incorrect span::before { content: '\2717  '; font-weight: 700; }
 
     .explanation {
       display: none;
@@ -606,7 +694,7 @@
       margin: 2rem 0;
     }
 
-    .score-banner.show { display: block; animation: fadeIn 0.5s ease; }
+    .score-banner.show { display: block; animation: glowPulse 2s ease infinite; }
 
     .score-banner .score-value {
       font-family: var(--serif);
@@ -614,6 +702,7 @@
       font-weight: 900;
       color: var(--accent);
       line-height: 1;
+      animation: scoreEntrance 0.5s ease both;
     }
 
     .score-banner .score-label {
@@ -630,6 +719,41 @@
       font-style: italic;
       font-size: 1.08rem;
       color: var(--text);
+    }
+
+    /* Confetti container */
+    .confetti-container {
+      position: relative;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .confetti-piece {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      top: 0;
+      animation: confettiFall 1.5s ease-out forwards;
+    }
+
+    /* Leaderboard self-highlight */
+    .lb-self-row td { background: var(--accent-dim) !important; }
+    .lb-self-row td:first-child { box-shadow: inset 3px 0 0 var(--accent); }
+
+    /* Empty state book stack */
+    .book-stack {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      margin: 0 auto 1.5rem;
+      transform: rotate(-2deg);
+      width: fit-content;
+    }
+
+    .book-spine {
+      height: 10px;
+      border-radius: 2px;
     }
 
     /* ─── Buttons ─── */
@@ -973,7 +1097,16 @@
       updateSidebarQuizzes();
 
       if (quizzes.length === 0) {
-        container.innerHTML = '<div class="quiz-empty" role="listitem">No quizzes yet. Check back soon.</div>';
+        container.innerHTML = `<div class="quiz-empty" role="listitem">
+          <div class="book-stack" aria-hidden="true">
+            <div class="book-spine" style="width:90px;background:#d4a362"></div>
+            <div class="book-spine" style="width:70px;background:#7dcc7c"></div>
+            <div class="book-spine" style="width:100px;background:#e07575"></div>
+            <div class="book-spine" style="width:60px;background:#e8b931"></div>
+            <div class="book-spine" style="width:80px;background:#b8b8b8"></div>
+          </div>
+          No quizzes yet. Check back soon.
+        </div>`;
         return;
       }
 
@@ -1110,7 +1243,7 @@
     });
 
     const banner = document.getElementById('score-banner');
-    document.getElementById('score-value').textContent = score;
+    const scoreEl = document.getElementById('score-value');
     document.getElementById('score-label').textContent = `out of ${questions.length}`;
 
     const pct = score / questions.length;
@@ -1123,6 +1256,12 @@
 
     banner.classList.add('show');
     banner.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+    // Animated score counter
+    animateCounter(scoreEl, score, 200);
+
+    // CSS confetti on perfect score
+    if (pct === 1) spawnConfetti(banner);
 
     document.getElementById('submit-btn').style.display = 'none';
     document.getElementById('retake-btn').style.display = '';
@@ -1169,6 +1308,7 @@
         return;
       }
 
+      const playerName = localStorage.getItem('quiz-player-name') || '';
       tbody.innerHTML = data.map((row, i) => {
         const rank = i + 1;
         const rankClass = rank <= 3 ? `lb-rank-${rank}` : '';
@@ -1176,9 +1316,12 @@
         const quiz = quizzes.find(q => q.id === row.quiz_id);
         const weekLabel = quiz ? `Week ${quiz.week_number}` : '-';
         const date = new Date(row.created_at).toLocaleDateString();
-        return `<tr>
+        const isSelf = playerName && row.name.trim().toLowerCase() === playerName.trim().toLowerCase();
+        const selfClass = isSelf ? ' class="lb-self-row"' : '';
+        const youSuffix = isSelf ? ' <em style="color:var(--accent);font-size:0.78rem">(You)</em>' : '';
+        return `<tr${selfClass}>
           <td class="lb-rank ${rankClass}">${rank}${medal}</td>
-          <td>${escapeHtml(row.name)}</td>
+          <td>${escapeHtml(row.name)}${youSuffix}</td>
           <td>${weekLabel}</td>
           <td class="lb-score">${row.score}/${row.total_questions}</td>
           <td class="lb-date">${date}</td>
@@ -1210,6 +1353,37 @@
     if (quizId) navigateTo('quiz', quizId);
     else navigateTo('home');
   });
+
+  // ─── Score Counter Animation ───
+  function animateCounter(el, target, duration) {
+    const start = performance.now();
+    el.textContent = '0';
+    function tick(now) {
+      const t = Math.min((now - start) / duration, 1);
+      el.textContent = Math.round(t * target);
+      if (t < 1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  }
+
+  // ─── CSS Confetti ───
+  function spawnConfetti(container) {
+    container.classList.add('confetti-container');
+    const colors = ['#d4a362', '#e8b574', '#7dcc7c', '#e07575', '#f0e6d6', '#b8b8b8', '#e8b931'];
+    for (let i = 0; i < 20; i++) {
+      const piece = document.createElement('div');
+      piece.className = 'confetti-piece';
+      piece.style.left = Math.random() * 100 + '%';
+      piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+      piece.style.animationDelay = (Math.random() * 0.6) + 's';
+      piece.style.transform = `rotate(${Math.random() * 360}deg)`;
+      container.appendChild(piece);
+    }
+    setTimeout(() => {
+      container.querySelectorAll('.confetti-piece').forEach(p => p.remove());
+      container.classList.remove('confetti-container');
+    }, 2500);
+  }
 
   (async function init() {
     await loadQuizList();
