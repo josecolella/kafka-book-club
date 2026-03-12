@@ -3,9 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kafka Book Club</title>
+  <title>Kafka Book Club — Weekly Reading Quizzes</title>
+  <meta name="description" content="Weekly quizzes for the Kafka: The Definitive Guide book club. Test your understanding, track your scores, and compete with fellow readers.">
+  <meta property="og:title" content="Kafka Book Club">
+  <meta property="og:description" content="Weekly reading quizzes for Kafka: The Definitive Guide. Auto-graded with leaderboard.">
+  <meta property="og:type" content="website">
+  <meta name="theme-color" content="#1a1612">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#128214;</text></svg>">
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Source+Sans+3:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,700;0,9..144,900;1,9..144,400&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
       --bg-deep: #1a1612;
@@ -16,21 +23,29 @@
       --border: #3d352b;
       --border-light: #4a3f33;
       --text: #d4c5b0;
-      --text-dim: #8a7d6d;
+      --text-dim: #9e9283;
       --text-bright: #f0e6d6;
-      --accent: #c9965a;
-      --accent-glow: #e0a85e;
-      --accent-dim: rgba(201, 150, 90, 0.15);
-      --green: #6abf69;
-      --green-bg: rgba(106, 191, 105, 0.1);
-      --red: #d96b6b;
-      --red-bg: rgba(217, 107, 107, 0.1);
-      --serif: 'Playfair Display', Georgia, serif;
-      --sans: 'Source Sans 3', -apple-system, sans-serif;
+      --accent: #d4a362;
+      --accent-glow: #e8b574;
+      --accent-dim: rgba(212, 163, 98, 0.15);
+      --green: #7dcc7c;
+      --green-bg: rgba(125, 204, 124, 0.12);
+      --red: #e07575;
+      --red-bg: rgba(224, 117, 117, 0.12);
+      --serif: 'Fraunces', Georgia, serif;
+      --sans: 'Outfit', -apple-system, sans-serif;
       --sidebar-w: 280px;
+      --focus-ring: 0 0 0 2px var(--bg-deep), 0 0 0 4px var(--accent);
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+    }
 
     body {
       font-family: var(--sans);
@@ -38,6 +53,8 @@
       color: var(--text);
       min-height: 100vh;
       line-height: 1.6;
+      font-size: 16px;
+      -webkit-font-smoothing: antialiased;
     }
 
     body::before {
@@ -50,11 +67,33 @@
       z-index: 9999;
     }
 
-    /* ─── Layout ─── */
-    .layout {
-      display: flex;
-      min-height: 100vh;
+    /* ─── Focus Styles ─── */
+    :focus-visible {
+      outline: none;
+      box-shadow: var(--focus-ring);
+      border-radius: 4px;
     }
+
+    /* ─── Skip Link ─── */
+    .skip-link {
+      position: absolute;
+      top: -100%;
+      left: 1rem;
+      background: var(--accent);
+      color: var(--bg-deep);
+      padding: 0.5rem 1rem;
+      border-radius: 0 0 6px 6px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      z-index: 10000;
+      text-decoration: none;
+      transition: top 0.2s;
+    }
+
+    .skip-link:focus { top: 0; }
+
+    /* ─── Layout ─── */
+    .layout { display: flex; min-height: 100vh; }
 
     /* ─── Sidebar ─── */
     .sidebar {
@@ -63,9 +102,7 @@
       border-right: 1px solid var(--border);
       padding: 2rem 1.25rem;
       position: fixed;
-      top: 0;
-      left: 0;
-      bottom: 0;
+      top: 0; left: 0; bottom: 0;
       overflow-y: auto;
       display: flex;
       flex-direction: column;
@@ -80,7 +117,7 @@
 
     .sidebar-brand h1 {
       font-family: var(--serif);
-      font-size: 1.5rem;
+      font-size: clamp(1.3rem, 1.5rem, 1.7rem);
       font-weight: 900;
       color: var(--text-bright);
       line-height: 1.15;
@@ -91,7 +128,7 @@
       font-style: italic;
       color: var(--accent);
       font-size: 0.85rem;
-      margin-top: 0.2rem;
+      margin-top: 0.25rem;
     }
 
     .sidebar-book {
@@ -105,24 +142,17 @@
       margin-bottom: 2rem;
       text-decoration: none;
       transition: all 0.2s;
+      color: inherit;
     }
 
-    .sidebar-book:hover {
+    .sidebar-book:hover, .sidebar-book:focus-visible {
       border-color: var(--accent);
       background: var(--bg-card-hover);
     }
 
-    .sidebar-book .book-icon {
-      font-size: 1.5rem;
-      line-height: 1;
-      flex-shrink: 0;
-      margin-top: 0.1rem;
-    }
+    .sidebar-book .book-icon { font-size: 1.5rem; line-height: 1; flex-shrink: 0; margin-top: 0.1rem; }
 
-    .sidebar-book .book-meta {
-      flex: 1;
-      min-width: 0;
-    }
+    .sidebar-book .book-meta { flex: 1; min-width: 0; }
 
     .sidebar-book .book-label {
       font-size: 0.6rem;
@@ -134,17 +164,13 @@
 
     .sidebar-book .book-name {
       font-family: var(--serif);
-      font-size: 0.82rem;
+      font-size: 0.85rem;
       color: var(--text-bright);
       line-height: 1.3;
       font-weight: 700;
     }
 
-    .sidebar-book .book-edition {
-      font-size: 0.7rem;
-      color: var(--text-dim);
-      margin-top: 0.1rem;
-    }
+    .sidebar-book .book-edition { font-size: 0.72rem; color: var(--text-dim); margin-top: 0.15rem; }
 
     .sidebar-section-label {
       font-size: 0.6rem;
@@ -176,13 +202,12 @@
       text-align: left;
       font-family: var(--sans);
       width: 100%;
+      color: inherit;
     }
 
-    .sidebar-quiz-item:hover {
-      background: var(--bg-card);
-    }
+    .sidebar-quiz-item:hover { background: var(--bg-card); }
 
-    .sidebar-quiz-item.active {
+    .sidebar-quiz-item[aria-current="true"] {
       background: var(--accent-dim);
       border-left: 2px solid var(--accent);
     }
@@ -196,13 +221,10 @@
       text-align: center;
     }
 
-    .sidebar-quiz-item .sq-info {
-      flex: 1;
-      min-width: 0;
-    }
+    .sidebar-quiz-item .sq-info { flex: 1; min-width: 0; }
 
     .sidebar-quiz-item .sq-title {
-      font-size: 0.8rem;
+      font-size: 0.82rem;
       color: var(--text);
       font-weight: 500;
       white-space: nowrap;
@@ -210,12 +232,9 @@
       text-overflow: ellipsis;
     }
 
-    .sidebar-quiz-item .sq-count {
-      font-size: 0.65rem;
-      color: var(--text-dim);
-    }
+    .sidebar-quiz-item .sq-count { font-size: 0.68rem; color: var(--text-dim); }
 
-    .sidebar-quiz-item.active .sq-title { color: var(--accent); }
+    .sidebar-quiz-item[aria-current="true"] .sq-title { color: var(--accent); }
 
     .sidebar-nav {
       margin-top: auto;
@@ -237,7 +256,7 @@
       border: none;
       background: none;
       font-family: var(--sans);
-      font-size: 0.8rem;
+      font-size: 0.82rem;
       color: var(--text-dim);
       font-weight: 500;
       width: 100%;
@@ -245,21 +264,19 @@
     }
 
     .sidebar-nav button:hover { background: var(--bg-card); color: var(--text); }
-    .sidebar-nav button.active { color: var(--accent); background: var(--accent-dim); }
+    .sidebar-nav button[aria-current="true"] { color: var(--accent); background: var(--accent-dim); }
     .sidebar-nav button .nav-icon { font-size: 1rem; width: 1.25rem; text-align: center; }
 
     /* ─── Mobile sidebar toggle ─── */
     .sidebar-toggle {
       display: none;
       position: fixed;
-      top: 1rem;
-      left: 1rem;
+      top: 1rem; left: 1rem;
       z-index: 200;
       background: var(--bg-card);
       border: 1px solid var(--border);
       color: var(--text);
-      width: 40px;
-      height: 40px;
+      width: 44px; height: 44px;
       border-radius: 6px;
       font-size: 1.2rem;
       cursor: pointer;
@@ -283,12 +300,9 @@
       max-width: calc(100% - var(--sidebar-w));
     }
 
-    .content {
-      max-width: 720px;
-      margin: 0 auto;
-    }
+    .content { max-width: 720px; margin: 0 auto; }
 
-    /* ─── Page Header (Home) ─── */
+    /* ─── Page Header ─── */
     .page-header {
       margin-bottom: 2.5rem;
       padding-bottom: 1.5rem;
@@ -297,17 +311,13 @@
 
     .page-header h2 {
       font-family: var(--serif);
-      font-size: 2rem;
+      font-size: clamp(1.6rem, 2rem, 2.4rem);
       font-weight: 900;
       color: var(--text-bright);
       line-height: 1.15;
     }
 
-    .page-header p {
-      color: var(--text-dim);
-      font-size: 0.9rem;
-      margin-top: 0.3rem;
-    }
+    .page-header p { color: var(--text-dim); font-size: 0.92rem; margin-top: 0.3rem; }
 
     /* ─── Views ─── */
     .view { display: none; }
@@ -319,11 +329,7 @@
     }
 
     /* ─── Quiz List (Home) ─── */
-    .quiz-grid {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
+    .quiz-grid { display: flex; flex-direction: column; gap: 1rem; }
 
     .quiz-card {
       background: var(--bg-card);
@@ -349,13 +355,13 @@
       transition: opacity 0.25s;
     }
 
-    .quiz-card:hover {
+    .quiz-card:hover, .quiz-card:focus-visible {
       background: var(--bg-card-hover);
       border-color: var(--border-light);
       transform: translateX(2px);
     }
 
-    .quiz-card:hover::before { opacity: 1; }
+    .quiz-card:hover::before, .quiz-card:focus-visible::before { opacity: 1; }
 
     .week-badge {
       font-family: var(--serif);
@@ -388,9 +394,9 @@
       margin-bottom: 0.2rem;
     }
 
-    .quiz-info p { font-size: 0.85rem; color: var(--text-dim); }
+    .quiz-info p { font-size: 0.88rem; color: var(--text-dim); }
 
-    .quiz-meta { text-align: right; font-size: 0.75rem; color: var(--text-dim); }
+    .quiz-meta { text-align: right; font-size: 0.78rem; color: var(--text-dim); }
     .quiz-meta .q-count { font-weight: 600; color: var(--text); }
 
     .quiz-loading, .quiz-empty {
@@ -409,7 +415,7 @@
     }
 
     .quiz-header .week-label {
-      font-size: 0.7rem;
+      font-size: 0.72rem;
       text-transform: uppercase;
       letter-spacing: 0.2em;
       color: var(--accent);
@@ -419,13 +425,38 @@
 
     .quiz-header h2 {
       font-family: var(--serif);
-      font-size: 1.8rem;
+      font-size: clamp(1.5rem, 1.8rem, 2.2rem);
       font-weight: 700;
       color: var(--text-bright);
       margin-bottom: 0.3rem;
     }
 
-    .quiz-header .desc { color: var(--text-dim); font-size: 0.9rem; }
+    .quiz-header .desc { color: var(--text-dim); font-size: 0.92rem; }
+
+    /* ─── Progress Bar ─── */
+    .progress-bar {
+      background: var(--border);
+      border-radius: 3px;
+      height: 4px;
+      margin-bottom: 1.75rem;
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: var(--accent);
+      border-radius: 3px;
+      transition: width 0.3s ease;
+      width: 0%;
+    }
+
+    .progress-text {
+      font-size: 0.72rem;
+      color: var(--text-dim);
+      text-align: right;
+      margin-bottom: 0.35rem;
+      font-variant-numeric: tabular-nums;
+    }
 
     /* ─── Name Input ─── */
     .name-section {
@@ -450,19 +481,19 @@
 
     .name-section input {
       flex: 1;
-      padding: 0.6rem 0.85rem;
+      padding: 0.65rem 0.9rem;
       border-radius: 4px;
       border: 1px solid var(--border);
       background: var(--bg-input);
       color: var(--text-bright);
-      font-size: 0.95rem;
+      font-size: 1rem;
       font-family: var(--sans);
       outline: none;
       transition: border-color 0.2s;
     }
 
-    .name-section input:focus { border-color: var(--accent); }
-    .name-section input::placeholder { color: var(--text-dim); opacity: 0.6; }
+    .name-section input:focus-visible { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+    .name-section input::placeholder { color: var(--text-dim); }
 
     /* ─── Question Cards ─── */
     .question-card {
@@ -477,22 +508,26 @@
     .question-card.correct { border-color: var(--green); }
     .question-card.incorrect { border-color: var(--red); }
 
-    .question-number {
-      font-size: 0.65rem;
-      text-transform: uppercase;
-      letter-spacing: 0.18em;
-      color: var(--accent);
-      font-weight: 700;
-      margin-bottom: 0.5rem;
-    }
+    .question-card fieldset { border: none; padding: 0; }
 
-    .question-text {
+    .question-card legend {
       font-family: var(--serif);
       font-size: 1.05rem;
       font-weight: 400;
       color: var(--text-bright);
       margin-bottom: 1rem;
       line-height: 1.5;
+      display: block;
+      width: 100%;
+    }
+
+    .question-number {
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: var(--accent);
+      font-weight: 700;
+      margin-bottom: 0.5rem;
     }
 
     .options { display: flex; flex-direction: column; gap: 0.4rem; }
@@ -501,12 +536,12 @@
       display: flex;
       align-items: center;
       gap: 0.75rem;
-      padding: 0.65rem 1rem;
+      padding: 0.7rem 1rem;
       border-radius: 5px;
       border: 1px solid var(--border);
       cursor: pointer;
       transition: all 0.15s;
-      font-size: 0.9rem;
+      font-size: 0.92rem;
       color: var(--text);
     }
 
@@ -515,7 +550,7 @@
     .option input[type="radio"] {
       appearance: none;
       -webkit-appearance: none;
-      width: 16px; height: 16px;
+      width: 18px; height: 18px;
       border: 2px solid var(--border-light);
       border-radius: 50%;
       cursor: pointer;
@@ -524,6 +559,7 @@
       position: relative;
     }
 
+    .option input[type="radio"]:focus-visible { box-shadow: var(--focus-ring); }
     .option input[type="radio"]:checked { border-color: var(--accent); }
 
     .option input[type="radio"]:checked::after {
@@ -547,10 +583,10 @@
     .explanation {
       display: none;
       margin-top: 0.75rem;
-      padding: 0.7rem 1rem;
+      padding: 0.75rem 1rem;
       border-radius: 4px;
-      font-size: 0.82rem;
-      line-height: 1.5;
+      font-size: 0.85rem;
+      line-height: 1.55;
       color: var(--text-dim);
       background: var(--bg-input);
       border-left: 2px solid var(--accent);
@@ -574,14 +610,14 @@
 
     .score-banner .score-value {
       font-family: var(--serif);
-      font-size: 4rem;
+      font-size: clamp(3rem, 4rem, 5rem);
       font-weight: 900;
       color: var(--accent);
       line-height: 1;
     }
 
     .score-banner .score-label {
-      font-size: 0.8rem;
+      font-size: 0.82rem;
       color: var(--text-dim);
       text-transform: uppercase;
       letter-spacing: 0.15em;
@@ -592,7 +628,7 @@
       margin-top: 1rem;
       font-family: var(--serif);
       font-style: italic;
-      font-size: 1.05rem;
+      font-size: 1.08rem;
       color: var(--text);
     }
 
@@ -607,10 +643,10 @@
 
     .btn {
       font-family: var(--sans);
-      padding: 0.75rem 2rem;
-      font-size: 0.85rem;
+      padding: 0.8rem 2.2rem;
+      font-size: 0.88rem;
       font-weight: 600;
-      letter-spacing: 0.06em;
+      letter-spacing: 0.04em;
       text-transform: uppercase;
       border: none;
       border-radius: 5px;
@@ -624,7 +660,7 @@
     .btn-ghost { background: transparent; color: var(--text-dim); border: 1px solid var(--border); }
     .btn-ghost:hover { color: var(--text); border-color: var(--border-light); }
 
-    .error-msg { color: var(--red); font-size: 0.82rem; text-align: center; margin-top: 0.5rem; }
+    .error-msg[role="alert"] { color: var(--red); font-size: 0.85rem; text-align: center; margin-top: 0.5rem; }
 
     /* ─── Leaderboard ─── */
     .leaderboard-section {
@@ -634,22 +670,12 @@
       padding: 1.75rem;
     }
 
-    .leaderboard-section h2 {
-      font-family: var(--serif);
-      font-size: 1.3rem;
-      font-weight: 700;
-      color: var(--text-bright);
-      margin-bottom: 0.25rem;
-    }
-
-    .leaderboard-section .lb-subtitle { font-size: 0.8rem; color: var(--text-dim); margin-bottom: 1.25rem; }
-
     .lb-filter { display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap; }
 
     .lb-filter button {
       font-family: var(--sans);
-      padding: 0.35rem 0.9rem;
-      font-size: 0.75rem;
+      padding: 0.4rem 1rem;
+      font-size: 0.78rem;
       border: 1px solid var(--border);
       background: transparent;
       color: var(--text-dim);
@@ -660,14 +686,14 @@
     }
 
     .lb-filter button:hover { color: var(--text); }
-    .lb-filter button.active { background: var(--accent-dim); color: var(--accent); border-color: var(--accent); }
+    .lb-filter button[aria-pressed="true"] { background: var(--accent-dim); color: var(--accent); border-color: var(--accent); }
 
     .lb-table { width: 100%; border-collapse: collapse; }
 
     .lb-table th {
       text-align: left;
-      padding: 0.55rem 0.75rem;
-      font-size: 0.65rem;
+      padding: 0.6rem 0.75rem;
+      font-size: 0.68rem;
       text-transform: uppercase;
       letter-spacing: 0.1em;
       color: var(--text-dim);
@@ -675,9 +701,11 @@
       font-weight: 600;
     }
 
+    .lb-table th[aria-sort] { cursor: pointer; }
+
     .lb-table td {
-      padding: 0.55rem 0.75rem;
-      font-size: 0.85rem;
+      padding: 0.6rem 0.75rem;
+      font-size: 0.88rem;
       border-bottom: 1px solid rgba(61, 53, 43, 0.4);
     }
 
@@ -685,10 +713,10 @@
 
     .lb-rank { font-weight: 700; min-width: 2.5rem; }
     .lb-rank-1 { color: #e8b931; }
-    .lb-rank-2 { color: #b0b0b0; }
+    .lb-rank-2 { color: #b8b8b8; }
     .lb-rank-3 { color: #c47f34; }
     .lb-score { font-weight: 600; color: var(--accent); font-variant-numeric: tabular-nums; }
-    .lb-date { color: var(--text-dim); font-size: 0.8rem; }
+    .lb-date { color: var(--text-dim); font-size: 0.82rem; }
 
     .lb-empty {
       text-align: center;
@@ -707,24 +735,26 @@
       .main { margin-left: 0; max-width: 100%; padding: 3.5rem 1.25rem 3rem; }
       .page-header h2 { font-size: 1.6rem; }
       .name-section { flex-direction: column; align-items: stretch; }
+      .question-card { padding: 1.25rem; }
     }
   </style>
 </head>
 <body>
 
-  <button class="sidebar-toggle" id="sidebar-toggle" onclick="toggleSidebar()">&#9776;</button>
+  <a href="#main-content" class="skip-link">Skip to content</a>
+
+  <button class="sidebar-toggle" id="sidebar-toggle" aria-label="Open navigation menu" aria-expanded="false" onclick="toggleSidebar()">&#9776;</button>
   <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
 
   <div class="layout">
-    <!-- ─── Sidebar ─── -->
-    <aside class="sidebar" id="sidebar">
+    <aside class="sidebar" id="sidebar" aria-label="Book club navigation">
       <div class="sidebar-brand">
         <h1>Kafka<br>Book Club</h1>
-        <div class="tagline">Weekly reading quizzes</div>
+        <p class="tagline">Weekly reading quizzes</p>
       </div>
 
-      <a class="sidebar-book" href="https://github.com/melkhazen/Kafka-The-Definitive-Guide-2nd-Edition-pdf/blob/main/Kafka%20The%20Definitive%20Guide%20Real-Time%20Data%20and%20Stream%20Processing%20at%20Scale%2C%20Second%20Edition%20by%20Gwen%20Shapira%2C%20Todd%20Palino%2C%20Rajini%20Sivaram%2C%20Krit%20Petty%20(z-lib.org).pdf" target="_blank" rel="noopener">
-        <div class="book-icon">&#128214;</div>
+      <a class="sidebar-book" href="https://github.com/melkhazen/Kafka-The-Definitive-Guide-2nd-Edition-pdf/blob/main/Kafka%20The%20Definitive%20Guide%20Real-Time%20Data%20and%20Stream%20Processing%20at%20Scale%2C%20Second%20Edition%20by%20Gwen%20Shapira%2C%20Todd%20Palino%2C%20Rajini%20Sivaram%2C%20Krit%20Petty%20(z-lib.org).pdf" target="_blank" rel="noopener" aria-label="Open the book: Kafka The Definitive Guide, 2nd Edition (PDF, opens in new tab)">
+        <div class="book-icon" aria-hidden="true">&#128214;</div>
         <div class="book-meta">
           <div class="book-label">Reading Material</div>
           <div class="book-name">Kafka: The Definitive Guide</div>
@@ -732,49 +762,52 @@
         </div>
       </a>
 
-      <div class="sidebar-section-label">Quizzes</div>
-      <div class="sidebar-quizzes" id="sidebar-quizzes">
-        <div style="padding: 0.5rem 0.75rem; font-size: 0.8rem; color: var(--text-dim); font-style: italic;">Loading...</div>
-      </div>
+      <div class="sidebar-section-label" id="quizzes-label">Quizzes</div>
+      <nav class="sidebar-quizzes" id="sidebar-quizzes" aria-labelledby="quizzes-label">
+        <div style="padding: 0.5rem 0.75rem; font-size: 0.82rem; color: var(--text-dim); font-style: italic;">Loading...</div>
+      </nav>
 
-      <div class="sidebar-nav">
-        <button data-view="home" class="active" onclick="navigateTo('home')">
-          <span class="nav-icon">&#9776;</span> All Quizzes
+      <nav class="sidebar-nav" aria-label="Main navigation">
+        <button data-view="home" aria-current="true" onclick="navigateTo('home')">
+          <span class="nav-icon" aria-hidden="true">&#9776;</span> All Quizzes
         </button>
         <button data-view="leaderboard" onclick="navigateTo('leaderboard')">
-          <span class="nav-icon">&#9734;</span> Leaderboard
+          <span class="nav-icon" aria-hidden="true">&#9734;</span> Leaderboard
         </button>
-      </div>
+      </nav>
     </aside>
 
-    <!-- ─── Main ─── -->
-    <main class="main">
+    <main class="main" id="main-content">
       <div class="content">
 
         <!-- HOME -->
-        <div id="home-view" class="view active">
+        <div id="home-view" class="view active" role="region" aria-label="Quiz list">
           <div class="page-header">
             <h2>Weekly Quizzes</h2>
             <p>Test your understanding of each chapter. Pick a week to get started.</p>
           </div>
-          <div id="quiz-list" class="quiz-grid">
-            <div class="quiz-loading">Loading quizzes...</div>
+          <div id="quiz-list" class="quiz-grid" role="list">
+            <div class="quiz-loading" aria-live="polite">Loading quizzes...</div>
           </div>
         </div>
 
         <!-- QUIZ -->
-        <div id="quiz-view" class="view">
+        <div id="quiz-view" class="view" role="region" aria-label="Quiz">
           <div class="quiz-header">
             <div class="week-label" id="quiz-week-label"></div>
             <h2 id="quiz-title"></h2>
-            <div class="desc" id="quiz-desc"></div>
+            <p class="desc" id="quiz-desc"></p>
           </div>
           <div class="name-section">
             <label for="player-name">Your Name</label>
-            <input type="text" id="player-name" placeholder="Enter your name to start">
+            <input type="text" id="player-name" placeholder="Enter your name to start" autocomplete="name" required>
+          </div>
+          <div class="progress-text" id="progress-text" aria-live="polite">0 of 0 answered</div>
+          <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" id="progress-bar">
+            <div class="progress-bar-fill" id="progress-fill"></div>
           </div>
           <div id="questions"></div>
-          <div class="score-banner" id="score-banner">
+          <div class="score-banner" id="score-banner" aria-live="polite">
             <div class="score-value" id="score-value"></div>
             <div class="score-label" id="score-label"></div>
             <div class="score-message" id="score-message"></div>
@@ -783,28 +816,28 @@
             <button class="btn btn-primary" id="submit-btn" onclick="submitQuiz()">Submit Answers</button>
             <button class="btn btn-ghost" id="retake-btn" style="display:none" onclick="retakeQuiz()">Retake</button>
           </div>
-          <div class="error-msg" id="error-msg"></div>
+          <div class="error-msg" id="error-msg" role="alert" aria-live="assertive"></div>
         </div>
 
         <!-- LEADERBOARD -->
-        <div id="leaderboard-view" class="view">
+        <div id="leaderboard-view" class="view" role="region" aria-label="Leaderboard">
           <div class="page-header">
             <h2>Leaderboard</h2>
             <p>Scores across all weeks</p>
           </div>
           <div class="leaderboard-section">
-            <div class="lb-filter" id="lb-filter"></div>
-            <table class="lb-table">
+            <div class="lb-filter" id="lb-filter" role="toolbar" aria-label="Filter by week"></div>
+            <table class="lb-table" aria-label="Quiz scores">
               <thead>
                 <tr>
-                  <th>#</th>
-                  <th>Name</th>
-                  <th>Quiz</th>
-                  <th>Score</th>
-                  <th>Date</th>
+                  <th scope="col">#</th>
+                  <th scope="col">Name</th>
+                  <th scope="col">Quiz</th>
+                  <th scope="col">Score</th>
+                  <th scope="col">Date</th>
                 </tr>
               </thead>
-              <tbody id="lb-body">
+              <tbody id="lb-body" aria-live="polite">
                 <tr><td colspan="5" class="lb-empty">Loading...</td></tr>
               </tbody>
             </table>
@@ -854,22 +887,27 @@
 
   // ─── Sidebar ───
   function toggleSidebar() {
-    document.getElementById('sidebar').classList.toggle('open');
-    document.getElementById('sidebar-overlay').classList.toggle('open');
+    const sidebar = document.getElementById('sidebar');
+    const toggle = document.getElementById('sidebar-toggle');
+    const overlay = document.getElementById('sidebar-overlay');
+    const isOpen = sidebar.classList.toggle('open');
+    overlay.classList.toggle('open');
+    toggle.setAttribute('aria-expanded', isOpen);
+    toggle.setAttribute('aria-label', isOpen ? 'Close navigation menu' : 'Open navigation menu');
   }
 
   function updateSidebarQuizzes() {
     const container = document.getElementById('sidebar-quizzes');
     if (quizzes.length === 0) {
-      container.innerHTML = '<div style="padding: 0.5rem 0.75rem; font-size: 0.8rem; color: var(--text-dim); font-style: italic;">No quizzes yet</div>';
+      container.innerHTML = '<div style="padding: 0.5rem 0.75rem; font-size: 0.82rem; color: var(--text-dim); font-style: italic;">No quizzes yet</div>';
       return;
     }
 
     container.innerHTML = quizzes.map(q => {
       const isActive = currentQuiz && currentQuiz.id === q.id;
       return `
-        <button class="sidebar-quiz-item ${isActive ? 'active' : ''}" onclick="navigateTo('quiz', '${q.id}')">
-          <div class="sq-week">${q.week_number}</div>
+        <button class="sidebar-quiz-item" aria-current="${isActive}" onclick="navigateTo('quiz', '${q.id}')" aria-label="Week ${q.week_number}: ${escapeHtml(q.title)}, ${q.questions.length} questions">
+          <div class="sq-week" aria-hidden="true">${q.week_number}</div>
           <div class="sq-info">
             <div class="sq-title">${escapeHtml(q.title)}</div>
             <div class="sq-count">${q.questions.length} questions</div>
@@ -879,18 +917,32 @@
   }
 
   function updateSidebarNav(view) {
-    document.querySelectorAll('.sidebar-nav button').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.sidebar-nav button').forEach(b => b.setAttribute('aria-current', 'false'));
     const btn = document.querySelector(`.sidebar-nav button[data-view="${view}"]`);
-    if (btn) btn.classList.add('active');
+    if (btn) btn.setAttribute('aria-current', 'true');
+  }
+
+  // ─── Progress Bar ───
+  function updateProgress() {
+    if (!currentQuiz) return;
+    const total = currentQuiz.questions.length;
+    let answered = 0;
+    for (let i = 0; i < total; i++) {
+      if (document.querySelector(`input[name="q${i}"]:checked`)) answered++;
+    }
+    const pct = Math.round((answered / total) * 100);
+    document.getElementById('progress-fill').style.width = pct + '%';
+    document.getElementById('progress-bar').setAttribute('aria-valuenow', pct);
+    document.getElementById('progress-text').textContent = `${answered} of ${total} answered`;
   }
 
   // ─── Navigation ───
   function navigateTo(view, quizId) {
     document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
 
-    // Close mobile sidebar
     document.getElementById('sidebar').classList.remove('open');
     document.getElementById('sidebar-overlay').classList.remove('open');
+    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', 'false');
 
     if (view === 'quiz' && quizId) {
       document.getElementById('quiz-view').classList.add('active');
@@ -921,27 +973,27 @@
       updateSidebarQuizzes();
 
       if (quizzes.length === 0) {
-        container.innerHTML = '<div class="quiz-empty">No quizzes yet. Check back soon.</div>';
+        container.innerHTML = '<div class="quiz-empty" role="listitem">No quizzes yet. Check back soon.</div>';
         return;
       }
 
       container.innerHTML = quizzes.map(q => {
         const qCount = q.questions.length;
         return `
-          <div class="quiz-card" onclick="navigateTo('quiz', '${q.id}')">
-            <div class="week-badge"><span>Week</span>${q.week_number}</div>
+          <div class="quiz-card" role="listitem" tabindex="0" onclick="navigateTo('quiz', '${q.id}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();navigateTo('quiz','${q.id}')}" aria-label="Week ${q.week_number}: ${escapeHtml(q.title)}, ${qCount} questions">
+            <div class="week-badge" aria-hidden="true"><span>Week</span>${q.week_number}</div>
             <div class="quiz-info">
               <h3>${escapeHtml(q.title)}</h3>
               <p>${escapeHtml(q.description || '')}</p>
             </div>
-            <div class="quiz-meta">
+            <div class="quiz-meta" aria-hidden="true">
               <div class="q-count">${qCount} questions</div>
             </div>
           </div>`;
       }).join('');
     } catch (e) {
       console.error('Failed to load quizzes:', e);
-      container.innerHTML = '<div class="quiz-empty">Failed to load quizzes. Please refresh.</div>';
+      container.innerHTML = '<div class="quiz-empty" role="listitem">Failed to load quizzes. Please refresh.</div>';
     }
   }
 
@@ -968,23 +1020,26 @@
     document.getElementById('player-name').value = savedName;
 
     renderQuestions(quiz.questions);
+    updateProgress();
   }
 
   function renderQuestions(questions) {
     const container = document.getElementById('questions');
     container.innerHTML = questions.map((q, i) => `
       <div class="question-card" id="qcard-${i}">
-        <div class="question-number">Question ${i + 1} of ${questions.length}</div>
-        <div class="question-text">${escapeHtml(q.q)}</div>
-        <div class="options">
-          ${q.options.map((opt, j) => `
-            <label class="option" id="opt-${i}-${j}">
-              <input type="radio" name="q${i}" value="${j}">
-              <span>${escapeHtml(opt)}</span>
-            </label>
-          `).join('')}
-        </div>
-        <div class="explanation" id="exp-${i}">${escapeHtml(q.explanation || '')}</div>
+        <div class="question-number" aria-hidden="true">Question ${i + 1} of ${questions.length}</div>
+        <fieldset>
+          <legend>Question ${i + 1}: ${escapeHtml(q.q)}</legend>
+          <div class="options" role="radiogroup">
+            ${q.options.map((opt, j) => `
+              <label class="option" id="opt-${i}-${j}">
+                <input type="radio" name="q${i}" value="${j}" aria-label="${escapeHtml(opt)}">
+                <span>${escapeHtml(opt)}</span>
+              </label>
+            `).join('')}
+          </div>
+        </fieldset>
+        <div class="explanation" id="exp-${i}" role="note">${escapeHtml(q.explanation || '')}</div>
       </div>
     `).join('');
 
@@ -995,7 +1050,12 @@
         radio.checked = true;
         opt.closest('.options').querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
         opt.classList.add('selected');
+        updateProgress();
       });
+    });
+
+    document.querySelectorAll('input[type="radio"]').forEach(radio => {
+      radio.addEventListener('change', updateProgress);
     });
   }
 
@@ -1095,7 +1155,7 @@
     quizzes.forEach(q => filters.push({ id: q.id, label: `Week ${q.week_number}` }));
 
     filterContainer.innerHTML = filters.map(f =>
-      `<button class="${f.id === lbFilterQuizId ? 'active' : ''}" onclick="filterLeaderboard('${f.id}')">${f.label}</button>`
+      `<button aria-pressed="${f.id === lbFilterQuizId}" onclick="filterLeaderboard('${f.id}')">${f.label}</button>`
     ).join('');
 
     try {
@@ -1134,6 +1194,14 @@
     lbFilterQuizId = quizId;
     loadLeaderboard();
   }
+
+  // ─── Keyboard: Escape closes sidebar ───
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      const sidebar = document.getElementById('sidebar');
+      if (sidebar.classList.contains('open')) toggleSidebar();
+    }
+  });
 
   // ─── Routing ───
   window.addEventListener('popstate', () => {
